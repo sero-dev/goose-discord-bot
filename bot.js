@@ -54,16 +54,13 @@ client.login(process.env.BOT_TOKEN);
 // Source:
 // https://github.com/AnIdiotsGuide/discordjs-bot-guide/blob/master/frequently-asked-questions.md
 const getDefaultChannel = guild => {
-  // get "original" default channel
   if (guild.channels.has(guild.id)) return guild.channels.get(guild.id);
 
-  // Check for a "general" channel, which is often default chat
   const generalChannel = guild.channels.find(
     channel => channel.name === 'general'
   );
   if (generalChannel) return generalChannel;
-  // Now we get into the heavy stuff: first channel in order where the bot can speak
-  // hold on to your hats!
+
   return guild.channels
     .filter(
       c =>
