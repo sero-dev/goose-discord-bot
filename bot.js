@@ -1,4 +1,5 @@
 const Discord = require('discord.js');
+const Long = require('long');
 const config = require('./config.json');
 const { playHonk, sendGif, switchNicknames } = require('./goose');
 
@@ -9,16 +10,22 @@ client.on('ready', () => {
   let start = 10;
   let range = 5;
 
+  // Randomized Actions other period of time
   setInterval(() => {
     switch (Math.floor(Math.random() * 3)) {
       case 0:
-        playHonk(channels.get(config.discord.expeditionID));
-        break;
+        let found = false;
+        channels.tap(channel => {
+          if (channel.type === 'voice' && found === false) {
+            playHonk(channel);
+            found = true;
+          }
+        });
       case 1:
-        sendGif(channels.get(config.discord.generalID));
+        sendGif(getDefaultChannel(guilds.first()));
         break;
       case 2:
-        switchNicknames(guilds.get(config.discord.serverID).members);
+        switchNicknames(guilds.first().members);
         break;
     }
   }, Math.floor(Math.random() * (range * 60000) + start * 60000));
@@ -27,15 +34,49 @@ client.on('ready', () => {
 client.on('message', msg => {
   switch (msg.content.toLowerCase()) {
     case 'honk':
-      playHonk(channels.get(config.discord.expeditionID));
+      if (msg.member.voiceChannel) playHonk(msg.member.voiceChannel);
       break;
     case 'goose':
-      sendGif(channels.get(config.discord.generalID));
+      sendGif(msg.channel);
       break;
     case 'switcharoo':
-      switchNicknames(guilds.get(config.discord.serverID).members);
+      switchNicknames(guilds.first().members);
       break;
   }
 });
 
+client.on('guildMemberAdd', member => {
+  const channel = getDefaultChannel(member.guild);
+  channel.send(`Honk! ${member}`);
+});
+
 client.login(config.discord.apiKey);
+
+// Source:
+// https://github.com/AnIdiotsGuide/discordjs-bot-guide/blob/master/frequently-asked-questions.md
+const getDefaultChannel = guild => {
+  // get "original" default channel
+  if (guild.channels.has(guild.id)) return guild.channels.get(guild.id);
+
+  // Check for a "general" channel, which is often default chat
+  const generalChannel = guild.channels.find(
+    channel => channel.name === 'general'
+  );
+  if (generalChannel) return generalChannel;
+  // Now we get into the heavy stuff: first channel in order where the bot can speak
+  // hold on to your hats!
+  return guild.channels
+    .filter(
+      c =>
+        c.type === 'text' &&
+        c.permissionsFor(guild.client.user).has('SEND_MESSAGES')
+    )
+    .sort(
+      (a, b) =>
+        a.position - b.position ||
+        Long.fromString(a.id)
+          .sub(Long.fromString(b.id))
+          .toNumber()
+    )
+    .first();
+};
