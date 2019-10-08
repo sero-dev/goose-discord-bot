@@ -50,7 +50,7 @@ client.on('guildMemberAdd', member => {
   channel.send(`Honk! ${member}`);
 });
 
-client.login(config.discord.apiKey);
+client.login(config.discordApiKey);
 
 // Source:
 // https://github.com/AnIdiotsGuide/discordjs-bot-guide/blob/master/frequently-asked-questions.md
