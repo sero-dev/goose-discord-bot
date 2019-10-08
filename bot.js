@@ -1,6 +1,5 @@
 const Discord = require('discord.js');
 const Long = require('long');
-const config = require('./config.json');
 const { playHonk, sendGif, switchNicknames } = require('./goose');
 
 const client = new Discord.Client();
@@ -50,7 +49,7 @@ client.on('guildMemberAdd', member => {
   channel.send(`Honk! ${member}`);
 });
 
-client.login(config.discordApiKey);
+client.login(process.env.BOT_TOKEN);
 
 // Source:
 // https://github.com/AnIdiotsGuide/discordjs-bot-guide/blob/master/frequently-asked-questions.md

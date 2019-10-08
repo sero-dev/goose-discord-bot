@@ -1,7 +1,5 @@
 const Giphy = require('giphy-js-sdk-core');
-const config = require('./config.json');
-
-const giphy = Giphy(config.giphyAPIKey);
+const giphy = Giphy(process.env.GIPHY);
 
 function playHonk(channel) {
   channel
