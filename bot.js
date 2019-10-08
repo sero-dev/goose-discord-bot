@@ -1,43 +1,9 @@
 const Discord = require('discord.js');
-const Giphy = require('giphy-js-sdk-core');
 const config = require('./config.json');
+const { playHonk, sendGif, switchNicknames } = require('./goose');
 
-const giphy = Giphy(config.giphyAPIKey);
 const client = new Discord.Client();
-
-function playHonk() {
-  let expedition = client.channels.get(config.discord.expeditionID);
-
-  expedition
-    .join()
-    .then(connection => {
-      const dispatcher = connection.playFile(
-        `./honks/honk_${Math.ceil(Math.random() * 10)}.mp3`
-      );
-      dispatcher.on('end', end => {
-        expedition.leave();
-      });
-    })
-    .catch(console.error);
-}
-
-function sendGif() {
-  giphy.random('gifs', { tag: 'goose' }).then(res => {
-    client.channels.get(config.discord.generalID).send(res.data.url);
-  });
-}
-
-function switchNicknames() {
-  let name1 = client.guilds.get(config.discord.serverID).members.random();
-  let name2 = client.guilds.get(config.discord.serverID).members.random();
-
-  while (name1 === name2)
-    name2 = client.guilds.get(config.discord.serverID).members.random();
-
-  let temp = name1.nickname || 'Goose';
-  name1.setNickname(name2.nickname || 'Goose');
-  name2.setNickname(temp);
-}
+const { channels, guilds } = client;
 
 client.on('ready', () => {
   let start = 10;
@@ -46,13 +12,13 @@ client.on('ready', () => {
   setInterval(() => {
     switch (Math.floor(Math.random() * 3)) {
       case 0:
-        playHonk();
+        playHonk(channels.get(config.discord.expeditionID));
         break;
       case 1:
-        sendGif();
+        sendGif(channels.get(config.discord.generalID));
         break;
       case 2:
-        switchNicknames();
+        switchNicknames(guilds.get(config.discord.serverID).members);
         break;
     }
   }, Math.floor(Math.random() * (range * 60000) + start * 60000));
@@ -61,13 +27,13 @@ client.on('ready', () => {
 client.on('message', msg => {
   switch (msg.content.toLowerCase()) {
     case 'honk':
-      playHonk();
+      playHonk(channels.get(config.discord.expeditionID));
       break;
     case 'goose':
-      sendGif();
+      sendGif(channels.get(config.discord.generalID));
       break;
     case 'switcharoo':
-      switchNicknames();
+      switchNicknames(guilds.get(config.discord.serverID).members);
       break;
   }
 });
