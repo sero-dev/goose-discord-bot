@@ -20,6 +20,7 @@ client.on('ready', () => {
             found = true;
           }
         });
+        break;
       case 1:
         sendGif(getDefaultChannel(guilds.first()));
         break;
