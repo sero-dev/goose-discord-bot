@@ -21,15 +21,16 @@ function sendGif(channel) {
   });
 }
 
-function switchNicknames(members) {
-  let memberA = members.random();
-  let memberB = members.random();
+// DEPRECATED
+// function switchNicknames(members) {
+//   let memberA = members.random();
+//   let memberB = members.random();
 
-  while (memberA === memberB) memberB = members.random();
+//   while (memberA === memberB) memberB = members.random();
 
-  let temp = memberA.nickname || 'Goose';
-  memberA.setNickname(memberB.nickname || 'Goose');
-  memberB.setNickname(temp);
-}
+//   let temp = memberA.nickname || 'Goose';
+//   memberA.setNickname(memberB.nickname || 'Goose');
+//   memberB.setNickname(temp);
+// }
 
-module.exports = { playHonk, sendGif, switchNicknames };
+module.exports = { playHonk, sendGif };

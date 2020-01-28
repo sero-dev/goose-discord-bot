@@ -1,17 +1,17 @@
 const Discord = require('discord.js');
 const Long = require('long');
-const { playHonk, sendGif, switchNicknames } = require('./goose');
+const { playHonk, sendGif } = require('./goose');
 
 const client = new Discord.Client();
 const { channels, guilds } = client;
 
 client.on('ready', () => {
-  let start = 10;
-  let range = 5;
+  let start = 10; // Minutes before another action can start
+  let range = 5;  // Range in minutes that an action can start after start time
 
   // Randomized Actions other period of time
   setInterval(() => {
-    switch (Math.floor(Math.random() * 3)) {
+    switch (Math.floor(Math.random())) {
       case 0:
         let found = false;
         channels.tap(channel => {
@@ -24,9 +24,6 @@ client.on('ready', () => {
       case 1:
         sendGif(getDefaultChannel(guilds.first()));
         break;
-      case 2:
-        switchNicknames(guilds.first().members);
-        break;
     }
   }, Math.floor(Math.random() * (range * 60000) + start * 60000));
 });
@@ -38,9 +35,6 @@ client.on('message', msg => {
       break;
     case 'goose':
       sendGif(msg.channel);
-      break;
-    case 'switcharoo':
-      switchNicknames(guilds.first().members);
       break;
   }
 });
