@@ -7,11 +7,11 @@ const { channels, guilds } = client;
 
 client.on('ready', () => {
   let start = 10; // Minutes before another action can start
-  let range = 5;  // Range in minutes that an action can start after start time
+  let range = 5; // Range in minutes that an action can start after start time
 
   // Randomized Actions other period of time
   setInterval(() => {
-    switch (Math.floor(Math.random())) {
+    switch (Math.floor(Math.random() * 2)) {
       case 0:
         let found = false;
         channels.tap(channel => {
